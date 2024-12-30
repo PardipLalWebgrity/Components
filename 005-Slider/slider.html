@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<style>
+		.slider-track{overflow: hidden;max-width: 100%;width:100%;user-select: none;cursor: pointer;max-width: 1000px;margin:0 auto;}
+		.slider-items-wrapper{width: 100%;position: relative;display: flex;justify-content: flex-start;align-items: center;/*transition:0.3s all linear;*/}
+		.slider-items{display: flex;justify-content: flex-start;align-items: stretch;}		
+		.slider-item{width: 20%;display: inline-flex;position: relative;isolation: isolate;}
+		.slider-item::before{content:'';position: absolute;top:0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.5);}
+		.slider-item img{width: 100%;max-height: 200px;z-index: -1;}
+		.slider-item span{position: absolute;top: 50%;left: 50%;transform: translate(-50%,-50%);color: #fff;font-size: 30px;}
+
+		.slider-navigations{display: flex;justify-content: center;align-items: center;gap:10px;margin-top: 10px;}
+
+	</style>
+	<div class="slider-wrapper" id="my-slider">
+		<div class="slider-track">
+			<div class="slider-items-wrapper">
+				<div class="slider-items">
+					<div class="slider-item">
+						<img src="images/1.jpg" alt="">
+						<span>1</span>
+					</div>
+					<div class="slider-item">
+						<img src="images/2.jpg" alt="">
+						<span>2</span>
+					</div>
+					<div class="slider-item">
+						<img src="images/3.jpg" alt="">
+						<span>3</span>
+					</div>
+					<div class="slider-item">
+						<img src="images/4.jpg" alt="">
+						<span>4</span>
+					</div>
+					<div class="slider-item">
+						<img src="images/5.jpg" alt="">
+						<span>5</span>
+					</div>
+					<div class="slider-item">
+						<img src="images/6.jpg" alt="">
+						<span>6</span>
+					</div>
+					<div class="slider-item">
+						<img src="images/7.jpg" alt="">
+						<span>7</span>
+					</div>
+					<div class="slider-item">
+						<img src="images/8.jpg" alt="">
+						<span>8</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="slider-navigations">
+			<button class="prev-slider">Prev</button>
+			<button class="next-slider">Next</button>
+		</div>
+	</div>
+
+	<script>
+		const WBTR_API = {
+
+			el: '',
+			parentEl: null,
+			itemsEl: null,
+			itemEls: null,	
+			itemsWrapper: null,
+			beforeFirstCloneEl: null,
+			afterLastCloneEl: null,
+			sliderNavigationsEl: null,
+			pointer: {
+				dX: 0,
+				dY: 0,
+				mX: 0,
+				mY: 0,
+			},
+			centerTranslate: 0,
+			currentTranslate: 0,
+			
+
+			storeElements: function(){
+				this.parentEl = document.querySelector(this.el);
+				this.sliderTrack = this.parentEl.querySelector('.slider-track');				
+				this.itemsEl = this.parentEl.querySelector('.slider-items');				
+				this.itemEls = this.parentEl.querySelectorAll('.slider-item');
+				this.itemsWrapper = this.parentEl.querySelector('.slider-items-wrapper');
+				this.sliderNavigationsEl = this.parentEl.querySelector('.slider-navigations');
+			},
+
+			setDimension: function(){
+				const singleItemWidthPercentage = +(100/this.args.items).toFixed(2);
+				const singleItemWidth = +((singleItemWidthPercentage*(this.sliderTrack.offsetWidth - (this.args.items-1)*this.args.gap))/100).toFixed(2);
+				const totalItemsWidth = (singleItemWidth*this.itemEls.length)+((this.itemEls.length-1)*this.args.gap);
+				this.itemsEl.style.width = totalItemsWidth.toFixed(2)+'px';		
+				this.itemsEl.style.gap = this.args.gap+'px';
+				this.itemsWrapper.style.width = ((totalItemsWidth*3)+(this.args.gap*2)).toFixed(2)+'px';
+				this.itemsWrapper.style.gap = this.args.gap+'px';
+				
+				this.itemsWrapper.style.transform = `translate3d(-${totalItemsWidth*2+this.args.gap*2}px, 0px, 0px)`;
+				this.currentTranslate = -totalItemsWidth*2-this.args.gap*2;
+				this.centerTranslate = -totalItemsWidth*2-this.args.gap*2;
+
+				this.itemEls.forEach((el)=>{
+					el.style.width = singleItemWidth+'px';					
+				})		
+			},
+
+			cloneItemsEl: function(){
+				const cloneStr = this.itemsEl.outerHTML;
+				this.itemsEl.insertAdjacentHTML('beforebegin', cloneStr+cloneStr);
+				this.itemsEl.insertAdjacentHTML('afterend', cloneStr+cloneStr);
+				this.itemsEl.classList.add('original');
+				this.itemsEl.previousSibling.classList.add('clone', 'before-clone');
+				this.itemsEl.previousSibling.previousSibling.classList.add('clone', 'before-clone', 'before-clone-first');
+				this.itemsEl.nextSibling.classList.add('clone', 'after-clone');
+				this.itemsEl.nextSibling.nextSibling.classList.add('clone', 'after-clone','after-clone-last');
+
+				this.beforeFirstCloneEl = this.itemsEl.previousSibling.previousSibling;
+				this.afterLastCloneEl = this.itemsEl.nextSibling.nextSibling;				
+			},
+
+			pointerSlide: function(){
+				this.sliderTrack.addEventListener('pointerdown', (e)=>{
+					this.pointerDownOnSlide(e);
+				});
+				this.sliderTrack.addEventListener('pointermove', (e)=>{
+					this.pointerMoveOnSlide(e);
+				});
+				this.sliderTrack.addEventListener('pointerup', (e)=>{
+					this.pointerUpOnSlide(e);
+				});
+			},
+
+			pointerDownOnSlide: function(e){
+				this.sliderTrack.setPointerCapture(e.pointerId);
+				this.pointer.active = true;
+				this.pointer.dX = e.clientX;
+				this.pointer.dY = e.clientY;
+			},
+
+			pointerMoveOnSlide: function(e){
+				if(!this.sliderTrack.hasPointerCapture(e.pointerId)) return false;
+				if(!this.pointer.active) return false;
+				
+				this.pointer.mX = e.clientX;
+				this.pointer.mY = e.clientY;
+
+				if(this.pointer.mX > this.pointer.dX ) this.itemsWrapper.style.transform = `translate3d(${this.currentTranslate+this.pointer.mX-this.pointer.dX}px, 0px, 0px)`;
+				if(this.pointer.mX < this.pointer.dX ) this.itemsWrapper.style.transform = `translate3d(${this.currentTranslate-(this.pointer.dX-this.pointer.mX)}px, 0px, 0px)`;	
+			},
+
+			pointerUpOnSlide: function(e){
+				this.sliderTrack.releasePointerCapture(e.pointerId);
+				this.currentTranslate = this.currentTranslate+this.pointer.mX-this.pointer.dX;
+				this.pointer.active = false;
+
+				this.pointer.dX = 0;
+				this.pointer.dY = 0;
+				this.pointer.mX = 0;
+				this.pointer.mY = 0;
+				
+				this.controlCloneViewable();
+			},
+
+			controlCloneViewable(){
+
+				const parentElRect = this.sliderTrack.getBoundingClientRect();
+				const beforeFirstCloneElRect = this.beforeFirstCloneEl.getBoundingClientRect();
+				const afterLastCloneElRect = this.afterLastCloneEl.getBoundingClientRect();
+
+				// before clone viewable
+				if(beforeFirstCloneElRect.right-parentElRect.left > 0){
+					const beforeCloneFirstHiddenWidth = beforeFirstCloneElRect.width - (beforeFirstCloneElRect.right - parentElRect.left);					
+					this.itemsWrapper.style.transform = `translate3d(${this.centerTranslate-beforeCloneFirstHiddenWidth}px, 0px, 0px)`;
+					this.currentTranslate = this.centerTranslate;
+				}
+
+				// after clone viewable
+				if(parentElRect.right > afterLastCloneElRect.left){
+					const beforeCloneFirstDistanceWidth = afterLastCloneElRect.left - parentElRect.left;					
+					this.itemsWrapper.style.transform = `translate3d(${this.centerTranslate+beforeCloneFirstDistanceWidth}px, 0px, 0px)`;
+					this.currentTranslate = this.centerTranslate;
+				}
+			},
+
+			slideNavigationHandle: function(){
+				this.sliderNavigationsEl.addEventListener('click', (e)=>{
+					this.slideNavigationEvent(e);
+				})
+			},
+
+			slideNavigationEvent: function(e){				
+				if(e.target.matches('.prev-slider')){
+					this.sliderTrack.style.pointerEvents = 'none';
+					this.itemsWrapper.style.transition = '0.8s all linear';
+					
+					this.itemsWrapper.style.transform = `translate3d(${this.currentTranslate + this.sliderTrack.offsetWidth+this.args.gap}px, 0px, 0px)`;	
+					this.currentTranslate = this.currentTranslate + this.sliderTrack.offsetWidth+this.args.gap;	
+					setTimeout(()=>{
+						this.controlCloneViewable();
+						this.itemsWrapper.style.transition = 'none';
+						this.sliderTrack.style.pointerEvents = 'auto';
+					},800);
+				}
+			},
+
+			slider: function(el,args){
+				this.el = el;
+				this.args = args;
+				this.storeElements();
+				this.setDimension();
+				this.cloneItemsEl();
+				this.pointerSlide();
+				this.slideNavigationHandle();
+			},	
+		}
+
+		WBTR_API.slider('#my-slider',{
+			items: 5,
+			gap: 10,			
+			dots: true,
+		});
+	</script>
+</body>
+</html>		
