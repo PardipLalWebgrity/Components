@@ -5,6 +5,8 @@ import html from './html.js';
 
 class WBTR_Color_Picker extends Component{
 
+	pointerActive = false;
+
 	constructor(){
 		super();
 		this.html = html;
@@ -109,8 +111,8 @@ class WBTR_Color_Picker extends Component{
 
 	handlePointerDown(e){
 		if(e.target.dataset.id == 'cpicker-box-canvas') {
+			this.pointerActive = true;
 			this.$id.cpickerBoxCanvas.setPointerCapture(e.pointerId);
-			const valu = e.target.value;
 			const xPos = e.clientX-this.$id.cpickerBoxCanvas.getBoundingClientRect().left;
 			const yPos = e.clientY-this.$id.cpickerBoxCanvas.getBoundingClientRect().top;
 			let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
@@ -119,10 +121,19 @@ class WBTR_Color_Picker extends Component{
 	}
 
 	handlePointerMove(e){
-		if(e.target.dataset.id == 'cpicker-box-canvas') {
-			const valu = e.target.value;
-			const xPos = e.clientX-this.$id.cpickerBoxCanvas.getBoundingClientRect().left;
-			const yPos = e.clientY-this.$id.cpickerBoxCanvas.getBoundingClientRect().top;
+	
+		if(this.pointerActive) {
+			let xPos = Math.floor(e.clientX-this.$id.cpickerBoxCanvas.getBoundingClientRect().left);
+			let yPos = Math.floor(e.clientY-this.$id.cpickerBoxCanvas.getBoundingClientRect().top);
+
+			if(xPos>this.$id.cpickerBoxCanvas.offsetWidth){
+				xPos = this.$id.cpickerBoxCanvas.offsetWidth-1;
+			}
+			if(yPos>this.$id.cpickerBoxCanvas.offsetHeight){
+				yPos = this.$id.cpickerBoxCanvas.offsetHeight-1;
+			}
+			console.log(xPos,yPos);
+			
 			let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
 			document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${(color[2]/255).toFixed(2)})`; 
 		}
@@ -130,8 +141,8 @@ class WBTR_Color_Picker extends Component{
 
 	handlePointerUp(e){
 		if(e.target.dataset.id == 'cpicker-box-canvas') {
+			this.pointerActive = false;
 			this.$id.cpickerBoxCanvas.setPointerCapture(e.pointerId);
-			const valu = e.target.value;
 			const xPos = e.clientX-this.$id.cpickerBoxCanvas.getBoundingClientRect().left;
 			const yPos = e.clientY-this.$id.cpickerBoxCanvas.getBoundingClientRect().top;
 			let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
