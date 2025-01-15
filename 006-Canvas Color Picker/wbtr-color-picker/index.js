@@ -105,6 +105,14 @@ class WBTR_Color_Picker extends Component{
 			
 			if(valu == 0 || valu == 1) color = [255, 0, 0, 255];
 			this.cpickerBoxCanvasUI(`rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+			document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]}, ${(color[3]/255).toFixed(2)})`;
+		}
+
+		// Transparent
+		if(e.target.dataset.id == 'cpicker-transparent-input') {
+			const valu = e.target.value;
+			console.log(valu);
+			
 		}
 
 	}
@@ -125,8 +133,7 @@ class WBTR_Color_Picker extends Component{
 
 	handlePointerUp(e){
 			this.pointerActive = false;
-			this.$id.cpickerBoxCanvas.releasePointerCapture(e.pointerId);
-			this.getXYPointerPositionColorOfBoxCanvas(e);
+			this.$id.cpickerBoxCanvas.releasePointerCapture(e.pointerId);			
 	}
 
 	getXYPointerPositionColorOfBoxCanvas(e){
@@ -143,6 +150,8 @@ class WBTR_Color_Picker extends Component{
 		if(e.clientY<boxCanvasRect.top) yPos = 0;
 		
 		let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
+		this.$id.cpickerBoxThumb.style.left = xPos+'px';
+		this.$id.cpickerBoxThumb.style.top = yPos+'px';
 		document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]}, ${(color[3]/255).toFixed(2)})`; 
 
 	}
