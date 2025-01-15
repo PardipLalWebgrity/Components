@@ -3,12 +3,11 @@ const html = `
 		<div class="cpicker wrapper" data-id="cpicker">
 
 			<div class="cpicker-box">
-				<canvas class="cpicker-box-canvas" data-id="cpicker-box-canvas" width="270" height="270"></canvas>
-				<span class="cpicker-box-thumb"></span>
+				<canvas class="cpicker-box-canvas" data-id="cpicker-box-canvas" width="271" height="271"></canvas>
+				<span class="cpicker-box-thumb" data-id="cpicker-box-thumb"></span>
 			</div>
 			<div class="cpicker-gradient" data-id="cpicker-gradient">
-				<canvas data-id="cpicker-gradient-canvas" width="270" height="32"></canvas>
-				<span class="cpicker-gradient-thumb"></span>
+				<canvas data-id="cpicker-gradient-canvas" width="271" height="32"></canvas>				
 				<input data-id="cpicker-gradient-input" type="range" min="0.00" max="1.00" step="0.01">
 			</div>
 			<div class="cpicker-transparent">				
