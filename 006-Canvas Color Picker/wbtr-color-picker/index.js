@@ -84,6 +84,9 @@ class WBTR_Color_Picker extends Component{
 		this.$id.cpicker.addEventListener('input',(e)=>{
 			this.handleInput(e);
 		})
+		this.$id.cpicker.addEventListener('change',(e)=>{
+			this.handleChange(e);
+		})
 		this.$id.cpicker.addEventListener('pointerdown',(e)=>{
 			this.handlePointerDown(e);
 		})
@@ -108,6 +111,8 @@ class WBTR_Color_Picker extends Component{
 			this.cpickerBoxCanvasUI(`rgb(${color[0]}, ${color[1]}, ${color[2]})`);
 
 			this.currentColor = this.getColorCodeFromCanvasPixelValue(color);
+			this.currentColor.a = this.$id.cpickerTransparentInput.value;
+			
 			this.updateColorCodeInputsData();
 
 		}
@@ -115,7 +120,18 @@ class WBTR_Color_Picker extends Component{
 		// Transparent Input
 		if(e.target.dataset.id == 'cpicker-transparent-input') {
 			this.currentColor.a = e.target.value;
+			console.log(this.currentColor.a);
 			this.updateColorCodeInputsData();
+		}
+
+	}
+
+	handleChange(e){
+
+		// Transparent Input
+		if(e.target.dataset.id == 'cpicker-code-type') {			
+			this.shadowRoot.querySelector('.cpicker-code-input.show')?.classList.remove('show');
+			this.shadowRoot.querySelector(`.cpicker-code-${this.$id.cpickerCodeType.value}`).classList.add('show');
 		}
 
 	}
@@ -125,6 +141,7 @@ class WBTR_Color_Picker extends Component{
 			this.pointerActive = true;
 			this.$id.cpickerBoxCanvas.setPointerCapture(e.pointerId);
 			this.currentColor = this.getColorCodeFromCanvasPixelValue(this.getXYPointerPositionColorOfBoxCanvas(e));
+			this.currentColor.a = this.$id.cpickerTransparentInput.value;
 			this.updateColorCodeInputsData();
 		}
 	}
@@ -132,6 +149,7 @@ class WBTR_Color_Picker extends Component{
 	handlePointerMove(e){
 		if(this.pointerActive && this.$id.cpickerBoxCanvas.hasPointerCapture(e.pointerId)) {
 			this.currentColor = this.getColorCodeFromCanvasPixelValue(this.getXYPointerPositionColorOfBoxCanvas(e));
+			this.currentColor.a = this.$id.cpickerTransparentInput.value;
 			this.updateColorCodeInputsData();
 		}
 	}
@@ -166,15 +184,13 @@ class WBTR_Color_Picker extends Component{
 		this.$id.cpickerCodeRgbaGinput.value = this.currentColor.g;
 		this.$id.cpickerCodeRgbaBinput.value = this.currentColor.b;
 		this.$id.cpickerCodeRgbaAinput.value = this.currentColor.a;
-		console.log(this.currentColor);
-		
 	}
 
 	// Color
 	getColorCodeFromCanvasPixelValue(rgba) { // Parameter Format : [255,255,255,255];
 			const [r, g, b, a] = rgba;
 			const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-			const alpha = (a / 255).toFixed(2);
+			let alpha = (a / 255).toFixed(2);
 			return {
 					hex,					
 					r,
