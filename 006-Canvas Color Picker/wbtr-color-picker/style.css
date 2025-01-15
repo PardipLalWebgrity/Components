@@ -6,11 +6,29 @@
 .cpicker [type="range"]::-webkit-slider-runnable-track {height: 33px;background: transparent;border-radius: 4px;}
 
 .cpicker-box{position: relative;line-height: 0;}
-.cpicker-box-thumb{width: 11px;height: 11px;position: absolute;border:3px solid #fafafa;border-radius: 50%;pointer-events: none;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);transition:none;transform:translate(-50%,-50%);}
+.cpicker-box-thumb{width: 11px;height: 11px;position: absolute;border:3px solid #fafafa;border-radius: 50%;pointer-events: none;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);transition:none;transform:translate(-50%,-50%);left: 129px;top: 127px;}
 
-.cpicker-gradient{position: relative;line-height: 0;}
-.cpicker-transparent{background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),linear-gradient(-45deg, #ccc 25%, transparent 25%),linear-gradient(45deg, transparent 75%, #ccc 75%),linear-gradient(-45deg, transparent 75%, #ccc 75%);background-size: 16px 16px;background-position: 0 0, 0 8px, 8px -8px, -8px 0px;position: relative;}
+.cpicker-gradient{position: relative;line-height: 0;margin-top: 5px;}
+
+.cpicker-transparent{background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),linear-gradient(-45deg, #ccc 25%, transparent 25%),linear-gradient(45deg, transparent 75%, #ccc 75%),linear-gradient(-45deg, transparent 75%, #ccc 75%);background-size: 16px 16px;background-position: 0 0, 0 8px, 8px -8px, -8px 0px;position: relative;margin-top: 5px;}
 .cpicker-transparent .overlay{background:linear-gradient(to right, rgba(0, 42, 255, 0) 0%, rgb(0, 42, 255) 100%);width: 100%;height: 32px;}
 
+
+.cpicker-code{display: flex;justify-content: flex-start;align-items: flex-start;height: 35px;gap: 4px;margin-top: 5px;}
+.cpicker-code :where(input,select){border:none;outline:none;box-shadow: none;background: none;appearance: none;-moz-appearance: textfield;}
+
+.cpicker-code-type{border:1px solid #ccc;width: 65px;height: 100%;text-transform: uppercase;padding: 4px 6px;}
+
+.cpicker-code-inputs{flex-grow: 1;width: 50px;border:1px solid #ccc;height: 100%;}
+.cpicker-code-inputs input{width:100%;height: 100%;padding: 0 6px;font-size: 14px;}
+
+.cpicker-code .cpicker-code-input{display: none;height: 100%;}
+.cpicker-code-input.show{display: flex;}
+
+.cpicker-code-hex-input{width: 100%;height: 100%;}
+
+.cpicker-code-rgba{display: flex;}
+.cpicker-code-rgba > *{width:25%;height: 100%;border-right: 1px solid #ccc;}
+.cpicker-code-rgba > *:last-child{border-right: none;}
 
 
