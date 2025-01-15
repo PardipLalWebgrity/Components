@@ -8,11 +8,11 @@ const html = `
 			</div>
 			<div class="cpicker-gradient" data-id="cpicker-gradient">
 				<canvas data-id="cpicker-gradient-canvas" width="271" height="32"></canvas>				
-				<input data-id="cpicker-gradient-input" type="range" min="0.00" max="1.00" step="0.01">
+				<input data-id="cpicker-gradient-input" type="range" min="0.00" max="1.00" step="0.01" value="0.66">
 			</div>
 			<div class="cpicker-transparent">				
 				<div class="overlay"></div>	
-				<input data-id="cpicker-transparent-input" type="range" min="0.00" max="1.00" step="0.01">
+				<input data-id="cpicker-transparent-input" type="range" min="0.00" max="1.00" step="0.01" value="0.5">
 			</div>
 
 			<div class="cpicker-code">
