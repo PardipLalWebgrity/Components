@@ -37,7 +37,7 @@ class WBTR_Color_Picker extends Component{
 
 		// set 1st overlay
 		const gradient1 = ctx.createLinearGradient(0, 0, canvasEl.width, 0); 
-		gradient1.addColorStop(0, "#fff"); 
+		gradient1.addColorStop(0, "rgba(255, 255, 255, 1)");
 		gradient1.addColorStop(1, "rgba(255, 255, 255, 0)");
 		ctx.fillStyle = gradient1;
 		ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
@@ -113,41 +113,38 @@ class WBTR_Color_Picker extends Component{
 		if(e.target.dataset.id == 'cpicker-box-canvas') {
 			this.pointerActive = true;
 			this.$id.cpickerBoxCanvas.setPointerCapture(e.pointerId);
-			const xPos = e.clientX-this.$id.cpickerBoxCanvas.getBoundingClientRect().left;
-			const yPos = e.clientY-this.$id.cpickerBoxCanvas.getBoundingClientRect().top;
-			let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
-			document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${(color[2]/255).toFixed(2)})`; 
+			this.getXYPointerPositionColorOfBoxCanvas(e);
 		}
 	}
 
 	handlePointerMove(e){
-	
-		if(this.pointerActive) {
-			let xPos = Math.floor(e.clientX-this.$id.cpickerBoxCanvas.getBoundingClientRect().left);
-			let yPos = Math.floor(e.clientY-this.$id.cpickerBoxCanvas.getBoundingClientRect().top);
-
-			if(xPos>this.$id.cpickerBoxCanvas.offsetWidth){
-				xPos = this.$id.cpickerBoxCanvas.offsetWidth-1;
-			}
-			if(yPos>this.$id.cpickerBoxCanvas.offsetHeight){
-				yPos = this.$id.cpickerBoxCanvas.offsetHeight-1;
-			}
-			console.log(xPos,yPos);
-			
-			let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
-			document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${(color[2]/255).toFixed(2)})`; 
+		if(this.pointerActive && this.$id.cpickerBoxCanvas.hasPointerCapture(e.pointerId)) {
+			this.getXYPointerPositionColorOfBoxCanvas(e);
 		}
 	}
 
 	handlePointerUp(e){
-		if(e.target.dataset.id == 'cpicker-box-canvas') {
 			this.pointerActive = false;
-			this.$id.cpickerBoxCanvas.setPointerCapture(e.pointerId);
-			const xPos = e.clientX-this.$id.cpickerBoxCanvas.getBoundingClientRect().left;
-			const yPos = e.clientY-this.$id.cpickerBoxCanvas.getBoundingClientRect().top;
-			let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
-			document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${(color[2]/255).toFixed(2)})`; 
-		}
+			this.$id.cpickerBoxCanvas.releasePointerCapture(e.pointerId);
+			this.getXYPointerPositionColorOfBoxCanvas(e);
+	}
+
+	getXYPointerPositionColorOfBoxCanvas(e){
+
+		const boxCanvasRect = this.$id.cpickerBoxCanvas.getBoundingClientRect();
+
+		let xPos = Math.floor(e.clientX-boxCanvasRect.left);
+		let yPos = Math.floor(e.clientY-boxCanvasRect.top);
+		
+		if(e.clientX>boxCanvasRect.right) xPos = boxCanvasRect.width-1;
+		if(e.clientX<boxCanvasRect.left) xPos = 0;
+
+		if(e.clientY>boxCanvasRect.bottom) yPos = boxCanvasRect.height-1;
+		if(e.clientY<boxCanvasRect.top) yPos = 0;
+		
+		let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
+		document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]}, ${(color[3]/255).toFixed(2)})`; 
+
 	}
 
 	init(){
