@@ -6,6 +6,7 @@ import html from './html.js';
 class WBTR_Color_Picker extends Component{
 
 	pointerActive = false;
+	currentColor = { hex: "#464787", r: 70, g: 71, b: 135, a: "0.48" };
 
 	constructor(){
 		super();
@@ -21,7 +22,7 @@ class WBTR_Color_Picker extends Component{
 	}
 
 	defaultUI(){
-		this.cpickerBoxCanvasUI('rgb(255, 0, 0)');
+		this.cpickerBoxCanvasUI('rgb(15, 0, 255)');
 		this.cpickerGradientCanvas();
 	}
 
@@ -105,14 +106,16 @@ class WBTR_Color_Picker extends Component{
 			
 			if(valu == 0 || valu == 1) color = [255, 0, 0, 255];
 			this.cpickerBoxCanvasUI(`rgb(${color[0]}, ${color[1]}, ${color[2]})`);
-			document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]}, ${(color[3]/255).toFixed(2)})`;
+
+			this.currentColor = this.getColorCodeFromCanvasPixelValue(color);
+			this.updateColorCodeInputsData();
+
 		}
 
-		// Transparent
+		// Transparent Input
 		if(e.target.dataset.id == 'cpicker-transparent-input') {
-			const valu = e.target.value;
-			console.log(valu);
-			
+			this.currentColor.a = e.target.value;
+			this.updateColorCodeInputsData();
 		}
 
 	}
@@ -121,13 +124,15 @@ class WBTR_Color_Picker extends Component{
 		if(e.target.dataset.id == 'cpicker-box-canvas') {
 			this.pointerActive = true;
 			this.$id.cpickerBoxCanvas.setPointerCapture(e.pointerId);
-			this.getXYPointerPositionColorOfBoxCanvas(e);
+			this.currentColor = this.getColorCodeFromCanvasPixelValue(this.getXYPointerPositionColorOfBoxCanvas(e));
+			this.updateColorCodeInputsData();
 		}
 	}
 
 	handlePointerMove(e){
 		if(this.pointerActive && this.$id.cpickerBoxCanvas.hasPointerCapture(e.pointerId)) {
-			this.getXYPointerPositionColorOfBoxCanvas(e);
+			this.currentColor = this.getColorCodeFromCanvasPixelValue(this.getXYPointerPositionColorOfBoxCanvas(e));
+			this.updateColorCodeInputsData();
 		}
 	}
 
@@ -137,7 +142,6 @@ class WBTR_Color_Picker extends Component{
 	}
 
 	getXYPointerPositionColorOfBoxCanvas(e){
-
 		const boxCanvasRect = this.$id.cpickerBoxCanvas.getBoundingClientRect();
 
 		let xPos = Math.floor(e.clientX-boxCanvasRect.left);
@@ -152,8 +156,32 @@ class WBTR_Color_Picker extends Component{
 		let color = this.getColorFromCanvasPixel(this.$id.cpickerBoxCanvas, xPos, yPos);	
 		this.$id.cpickerBoxThumb.style.left = xPos+'px';
 		this.$id.cpickerBoxThumb.style.top = yPos+'px';
-		document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]}, ${(color[3]/255).toFixed(2)})`; 
+		return color;
+	}
 
+	updateColorCodeInputsData(){
+		this.$id.cpickerCodeCssInput.value = `rgb(${this.currentColor.r}, ${this.currentColor.g}, ${this.currentColor.b}, ${this.currentColor.a})`;
+		this.$id.cpickerCodeHexInput.value = this.currentColor.hex;
+		this.$id.cpickerCodeRgbaRinput.value = this.currentColor.r;
+		this.$id.cpickerCodeRgbaGinput.value = this.currentColor.g;
+		this.$id.cpickerCodeRgbaBinput.value = this.currentColor.b;
+		this.$id.cpickerCodeRgbaAinput.value = this.currentColor.a;
+		console.log(this.currentColor);
+		
+	}
+
+	// Color
+	getColorCodeFromCanvasPixelValue(rgba) { // Parameter Format : [255,255,255,255];
+			const [r, g, b, a] = rgba;
+			const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+			const alpha = (a / 255).toFixed(2);
+			return {
+					hex,					
+					r,
+					g,
+					b,
+					a: alpha,
+			};
 	}
 
 	init(){
