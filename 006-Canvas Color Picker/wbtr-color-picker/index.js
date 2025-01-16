@@ -113,14 +113,15 @@ class WBTR_Color_Picker extends Component{
 			this.currentColor = this.getColorCodeFromCanvasPixelValue(color);
 			this.currentColor.a = this.$id.cpickerTransparentInput.value;
 			
+			this.$id.cpickerTransparentOverlay.style.background = `linear-gradient(to right, rgba(0, 42, 255, 0) 0%, rgb(${color[0]}, ${color[1]}, ${color[2]}) 100%)`;
 			this.updateColorCodeInputsData();
+
 
 		}
 
 		// Transparent Input
 		if(e.target.dataset.id == 'cpicker-transparent-input') {
 			this.currentColor.a = e.target.value;
-			console.log(this.currentColor.a);
 			this.updateColorCodeInputsData();
 		}
 
@@ -136,39 +137,7 @@ class WBTR_Color_Picker extends Component{
 
 		// Hex Input
 		if(e.target.dataset.id == 'cpicker-code-hex-input') {
-
-			// calculation
-			const colorData = {};
-			colorData.hex = this.$id.cpickerCodeHexInput.value;
-			colorData.rgb = this.hexToRGB(colorData.hex);
-			colorData.hsv = this.RGBtoHSV(colorData.rgb);
-			colorData.solidColor = this.RGBtoHex(this.HSVtoRGB(colorData.hsv.h, 1, 1));
-
-			// input
-			this.$id.cpickerCodeRgbaRinput.value = colorData.rgb.r;
-			this.$id.cpickerCodeRgbaGinput.value = colorData.rgb.g;
-			this.$id.cpickerCodeRgbaBinput.value = colorData.rgb.b;
-			this.$id.cpickerCodeCssInput.value = `rgb(${colorData.rgb.r}, ${colorData.rgb.g}, ${colorData.rgb.b}, 1)`;
-			this.$id.cpickerGradientInput.value = ((colorData.hsv.h * 100)/100).toFixed(2);
-			
-			// UI
-			this.cpickerBoxCanvasUI(colorData.solidColor);
-			this.$id.cpickerTransparentOverlay.style.background = `linear-gradient(to right, rgba(0, 42, 255, 0) 0%, rgb(${colorData.rgb.r}, ${colorData.rgb.g}, ${colorData.rgb.b}) 100%)`;
-			
-			let x = colorData.hsv.s * 100;
-      let y = (1 - colorData.hsv.v) * 100;
-			let leftPos = (x/100 * this.$id.cpickerBoxCanvas.offsetWidth + this.$id.cpickerBoxThumb.offsetWidth/4);
-      let topPos = (y/100 * this.$id.cpickerBoxCanvas.offsetHeight + this.$id.cpickerBoxThumb.offsetWidth/4);
-
-			if(leftPos < 0) leftPos = 0;
-			if(leftPos > 270) leftPos = 270;
-
-			if(topPos < 0) topPos = 0;
-			if(topPos > 270) topPos = 270;
-
-			this.$id.cpickerBoxThumb.style.left = leftPos + 'px';
-      this.$id.cpickerBoxThumb.style.top = topPos + 'px';
-			
+			this.colorInputUIUpdate(this.$id.cpickerCodeHexInput.value);
 		}
 
 	}
@@ -215,12 +184,46 @@ class WBTR_Color_Picker extends Component{
 	}
 
 	updateColorCodeInputsData(){
-		this.$id.cpickerCodeCssInput.value = `rgb(${this.currentColor.r}, ${this.currentColor.g}, ${this.currentColor.b}, ${this.currentColor.a})`;
+		this.$id.cpickerCodeCssInput.value = `rgba(${this.currentColor.r}, ${this.currentColor.g}, ${this.currentColor.b}, ${this.currentColor.a})`;
 		this.$id.cpickerCodeHexInput.value = this.currentColor.hex;
 		this.$id.cpickerCodeRgbaRinput.value = this.currentColor.r;
 		this.$id.cpickerCodeRgbaGinput.value = this.currentColor.g;
 		this.$id.cpickerCodeRgbaBinput.value = this.currentColor.b;
 		this.$id.cpickerCodeRgbaAinput.value = this.currentColor.a;
+	}
+
+	colorInputUIUpdate(haxCode){
+		// calculation
+		const colorData = {};
+		colorData.hex = haxCode;
+		colorData.rgb = this.hexToRGB(colorData.hex);
+		colorData.hsv = this.RGBtoHSV(colorData.rgb);
+		colorData.solidColor = this.RGBtoHex(this.HSVtoRGB(colorData.hsv.h, 1, 1));
+
+		// input
+		this.$id.cpickerCodeRgbaRinput.value = colorData.rgb.r;
+		this.$id.cpickerCodeRgbaGinput.value = colorData.rgb.g;
+		this.$id.cpickerCodeRgbaBinput.value = colorData.rgb.b;
+		this.$id.cpickerCodeCssInput.value = `rgb(${colorData.rgb.r}, ${colorData.rgb.g}, ${colorData.rgb.b}, 1)`;
+		this.$id.cpickerGradientInput.value = ((colorData.hsv.h * 100)/100).toFixed(2);
+		
+		// UI
+		this.cpickerBoxCanvasUI(colorData.solidColor);
+		this.$id.cpickerTransparentOverlay.style.background = `linear-gradient(to right, rgba(0, 42, 255, 0) 0%, rgb(${colorData.rgb.r}, ${colorData.rgb.g}, ${colorData.rgb.b}) 100%)`;
+		
+		let x = colorData.hsv.s * 100;
+		let y = (1 - colorData.hsv.v) * 100;
+		let leftPos = (x/100 * this.$id.cpickerBoxCanvas.offsetWidth + this.$id.cpickerBoxThumb.offsetWidth/4);
+		let topPos = (y/100 * this.$id.cpickerBoxCanvas.offsetHeight + this.$id.cpickerBoxThumb.offsetWidth/4);
+
+		if(leftPos < 0) leftPos = 0;
+		if(leftPos > 270) leftPos = 270;
+
+		if(topPos < 0) topPos = 0;
+		if(topPos > 270) topPos = 270;
+
+		this.$id.cpickerBoxThumb.style.left = leftPos + 'px';
+		this.$id.cpickerBoxThumb.style.top = topPos + 'px';
 	}
 
 	// Color
