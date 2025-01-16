@@ -149,7 +149,8 @@ class WBTR_Color_Picker extends Component{
 			this.$id.cpickerCodeRgbaGinput.value = colorData.rgb.g;
 			this.$id.cpickerCodeRgbaBinput.value = colorData.rgb.b;
 			this.$id.cpickerCodeCssInput.value = `rgb(${colorData.rgb.r}, ${colorData.rgb.g}, ${colorData.rgb.b}, 1)`;
-
+			this.$id.cpickerGradientInput.value = ((colorData.hsv.h * 100)/100).toFixed(2);
+			
 			// UI
 			this.cpickerBoxCanvasUI(colorData.solidColor);
 			this.$id.cpickerTransparentOverlay.style.background = `linear-gradient(to right, rgba(0, 42, 255, 0) 0%, rgb(${colorData.rgb.r}, ${colorData.rgb.g}, ${colorData.rgb.b}) 100%)`;
