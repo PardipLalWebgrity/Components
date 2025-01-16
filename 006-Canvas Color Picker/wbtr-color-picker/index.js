@@ -116,13 +116,29 @@ class WBTR_Color_Picker extends Component{
 			this.$id.cpickerTransparentOverlay.style.background = `linear-gradient(to right, rgba(0, 42, 255, 0) 0%, rgb(${color[0]}, ${color[1]}, ${color[2]}) 100%)`;
 			this.updateColorCodeInputsData();
 
-
 		}
 
 		// Transparent Input
 		if(e.target.dataset.id == 'cpicker-transparent-input') {
 			this.currentColor.a = e.target.value;
 			this.updateColorCodeInputsData();
+		}
+
+		// rgba input
+		if(e.target.closest('.cpicker-code-rgba')){
+			const hex = this.RGBtoHex(this.$id.cpickerCodeRgbaRinput.value,this.$id.cpickerCodeRgbaGinput.value,this.$id.cpickerCodeRgbaBinput.value);
+			this.colorInputUIUpdate(hex);
+		}
+
+		// css input
+		if(e.target.dataset.id == 'cpicker-code-css-input'){
+			
+			const rgba = this.rgbaStringToRGBA(this.$id.cpickerCodeCssInput.value);
+			
+			
+			const hex = this.RGBtoHex(rgba.r,rgba.g,rgba.b);
+
+			this.colorInputUIUpdate(hex);
 		}
 
 	}
@@ -193,6 +209,7 @@ class WBTR_Color_Picker extends Component{
 	}
 
 	colorInputUIUpdate(haxCode){
+		
 		// calculation
 		const colorData = {};
 		colorData.hex = haxCode;
@@ -201,6 +218,7 @@ class WBTR_Color_Picker extends Component{
 		colorData.solidColor = this.RGBtoHex(this.HSVtoRGB(colorData.hsv.h, 1, 1));
 
 		// input
+		this.$id.cpickerCodeHexInput.value = colorData.hex;
 		this.$id.cpickerCodeRgbaRinput.value = colorData.rgb.r;
 		this.$id.cpickerCodeRgbaGinput.value = colorData.rgb.g;
 		this.$id.cpickerCodeRgbaBinput.value = colorData.rgb.b;
@@ -312,6 +330,7 @@ class WBTR_Color_Picker extends Component{
 					b = r.b;
 					r = r.r;
 			}
+			
 			return '#' + this.toHex(parseInt(r)) + this.toHex(parseInt(g)) + this.toHex(parseInt(b));
 	}
 
@@ -359,6 +378,15 @@ class WBTR_Color_Picker extends Component{
 			return hex;
 	}
 
+	rgbaStringToRGBA(rgbaString){
+		const rgbaArr = rgbaString.replace('rgba(','').replace('rgb(','').replace(')','').split(',');
+		const r = rgbaArr[0]?.trim();
+		const g = rgbaArr[1]?.trim();
+		const b = rgbaArr[2]?.trim();
+		const a = rgbaArr[3] ? rgbaArr[3].trim() : 1;
+		return {r,g,b,a};
+	}
+
 	init(){
 		this.defaultUI();
 		this.event();		
@@ -370,7 +398,7 @@ if(!customElements.get('wbtr-color-picker')){
 }
 
 
-
+// rgba must be some value, when user fully remove g input value and change r value, error come, so when g value fully remove, add 0.
 
 
 
